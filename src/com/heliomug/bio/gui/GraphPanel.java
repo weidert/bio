@@ -19,7 +19,7 @@ import com.heliomug.bio.ProbeAttribute;
 import com.heliomug.bio.ProbeSet;
 import com.heliomug.utils.DataSet;
 import com.heliomug.utils.StatusDisplayer;
-import com.heliomug.utils.StatusDisplayerSingleton;
+import com.heliomug.utils.GlobalStatusDisplayer;
 
 /**
  * This is a panel to display a graph of the data.  
@@ -51,13 +51,13 @@ public class GraphPanel extends JPanel implements StandardPanel {
 			public void mouseClicked(MouseEvent e) {
 				Probe p = getNearProbe(e.getX(), e.getY());
 				if (p != null) {
-					StatusDisplayer sd = StatusDisplayerSingleton.getStatusDisplayer();
+					StatusDisplayer sd = GlobalStatusDisplayer.get();
 					sd.displayStatus(p.toString());
 				}
 			}
 		});
 		this.setBackground(Color.WHITE);
-		this.setBorder(MainFrame.STANDARD_BORDER);
+		this.setBorder(ProbeQueryMachineGUI.STANDARD_BORDER);
 
 		this.setPreferredSize(new Dimension(xSize, ySize));
 	}
@@ -133,7 +133,7 @@ public class GraphPanel extends JPanel implements StandardPanel {
 		
 		if (results != null) {
 			if (specialProbeIndex < 0) {
-				MainFrame.get().displayStatus("Starting Graph Drawing...");
+				ProbeQueryMachineGUI.get().displayStatus("Starting Graph Drawing...");
 			}
 			double[] xNorm = normZeroOne(xFxn);
 			double[] yNorm = normZeroOne(yFxn);
@@ -150,7 +150,7 @@ public class GraphPanel extends JPanel implements StandardPanel {
 				g.draw(s);
 			}
 			if (specialProbeIndex < 0) {
-				MainFrame.get().displayStatus("Graph drawing complete.  Click on a point for more info");
+				ProbeQueryMachineGUI.get().displayStatus("Graph drawing complete.  Click on a point for more info");
 			}
 		}
 	}

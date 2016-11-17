@@ -2,7 +2,7 @@ package com.heliomug.utils;
 
 import java.util.logging.Logger;
 
-public class StatusDisplayerSingleton {
+public class GlobalStatusDisplayer {
 	private static StatusDisplayer displayer = new StatusDisplayer() {
 		@Override
 		public void displayStatus(Object status) {
@@ -11,10 +11,10 @@ public class StatusDisplayerSingleton {
 	};
 	
 	public static void setStatusDisplayer(StatusDisplayer displayer) {
-		StatusDisplayerSingleton.displayer = displayer;
+		GlobalStatusDisplayer.displayer = displayer;
 	}
 	
-	public static StatusDisplayer getStatusDisplayer() {
+	public static StatusDisplayer get() {
 		return displayer;
 	}
 }

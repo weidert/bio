@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 import com.heliomug.bio.repository.GenomeRepository;
 import com.heliomug.utils.StatusDisplayer;
-import com.heliomug.utils.StatusDisplayerSingleton;
+import com.heliomug.utils.GlobalStatusDisplayer;
 
 /**
  * A loop command line tool to make queries and get results
@@ -21,7 +21,7 @@ public class CommandLineTool {
 	private StatusDisplayer sd;
 	
 	private CommandLineTool() {
-		sd = StatusDisplayerSingleton.getStatusDisplayer();
+		sd = GlobalStatusDisplayer.get();
 	}
 	
 	private void start() {
@@ -79,13 +79,14 @@ public class CommandLineTool {
 				if (words.length == 3) {
 					create(words[1], words[2]);
 				} else {
-					System.out.println("new takes exactly two arguments (file for input, directory path of new repository)");
+					System.out.println("new takes exactly two arguments (file for input, directory for output)");
 				}
 			} else if (command.equals("query")) {
 				if (words.length == 2) {
 					query(words[1]);
 				} else {
-					System.out.println("query takes exactly one argument (query of the form \"chr1:12000-chr3:3232423\" or \"chr1:23923-483948\")");
+					System.out.print("query takes exactly one argument");
+					System.out.println("(query of the form \"chr1:12000-chr3:3232423\" or \"chr1:23923-483948\")");
 				}
 			} else {
 				System.out.println("Unknown command \"" + command + "\".  Enter \"help\" for help.");
@@ -112,13 +113,13 @@ public class CommandLineTool {
 	
 	private void create(String inputPath, String outputPath) {
 		File inputFile = new File(inputPath);
-		File outputDirectory = new File(outputPath);
-		if (inputFile != null && outputDirectory != null) {
+		File outDir = new File(outputPath);
+		if (inputFile != null && outDir != null) {
 			try {
-				sd.displayStatus("Creating repository at " + outputDirectory.getAbsolutePath() + " from " + inputFile.getAbsolutePath() + "...");
-				GenomeRepository.createRepository(inputFile, outputDirectory);
-				repo = GenomeRepository.loadRepository(outputDirectory);
-				sd.displayStatus("Repository created at " + outputDirectory.getAbsolutePath() + ".");
+				sd.displayStatus("Creating repository at " + outputPath + " from " + inputPath + "...");
+				GenomeRepository.createRepository(inputFile, outDir);
+				repo = GenomeRepository.loadRepository(outDir);
+				sd.displayStatus("Repository created at " + outDir.getAbsolutePath() + ".");
 			} catch (ClassNotFoundException | IOException e) {
 				sd.displayStatus("ERROR: could not create repository");
 				e.printStackTrace();

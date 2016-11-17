@@ -106,7 +106,8 @@ public class BTNode implements Node, Serializable {
         store.markUsed(this);
     }
     
-    public void queryAll(ProbeSet results) throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
+    public void queryAll(ProbeSet results)
+    throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
     	Thread.sleep(1);
     	for (Entry entry : entries) {
     		if (entry != null) results.add(entry.probe);
@@ -118,7 +119,8 @@ public class BTNode implements Node, Serializable {
     	}
     }
     
-    public void query(ProbeSet results, int keyStart, int keyFinish) throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
+    public void query(ProbeSet results, int keyStart, int keyFinish) 
+    throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
     	Thread.sleep(1);
     	int first = getInsertionIndexFront(keyStart);
     	int last = getInsertionIndexBack(keyFinish) - 1;
@@ -175,7 +177,8 @@ public class BTNode implements Node, Serializable {
         size++;
     }
 
-    private void insertFromBelow(Entry entry, long rightChildId) throws FileNotFoundException, ClassNotFoundException, IOException {
+    private void insertFromBelow(Entry entry, long rightChildId) 
+    throws FileNotFoundException, ClassNotFoundException, IOException {
     	int index = getInsertionIndexBack(entry.key); 
     	insertIntoThisNode(entry, index);
     	childIds[index + 1] = rightChildId;

@@ -10,6 +10,7 @@ public class TextPanel extends JPanel implements StandardPanel {
 	private static final long serialVersionUID = 2099539043705227472L;
 
 	private static final int TEXT_RESULT_LIMIT = 1000000;
+	private static final int TAB_WIDTH = 12;
 
 	private ProbeSet results;
 	
@@ -19,8 +20,11 @@ public class TextPanel extends JPanel implements StandardPanel {
 		super();
 		textArea = new JTextArea(28, 80);
 		textArea.setEditable(false);
+		textArea.setTabSize(TAB_WIDTH);
 		textArea.setFont(MONOSPACE_STD);
-		JScrollPane scrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane scrollPane = new JScrollPane(textArea);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		this.add(scrollPane);
 	}
 	

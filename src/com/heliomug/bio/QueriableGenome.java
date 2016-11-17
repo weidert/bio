@@ -11,6 +11,7 @@ import java.io.IOException;
  *
  */
 public interface QueriableGenome {
-	ProbeSet query(GenomeQuery query) throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException;
+	ProbeSet query(GenomeQuery query) 
+			throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException;
 	File getBaseDirectory();
 }

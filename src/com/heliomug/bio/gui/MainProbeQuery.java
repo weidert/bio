@@ -361,63 +361,79 @@ public class MainProbeQuery extends JFrame implements ActionListener, StatusDisp
 	
 	
 	private void saveGraph() {
-		new Thread(() -> {
-			if (results != null) {
-				try {
-					displayStatus("Saving Graph...");
-					String fileName = graphicsPanel.saveGraph();
-					displayStatus("Saved graph as " + fileName + ".");
-				} catch (CancellationException e) {
-					displayStatus("Saving graph cancelled.");
-				} catch (IOException e) {
-					displayStatus("Saving graph failed.");
+		if (results == null) {
+			displayStatus("Need results first!");
+		} else {
+			new Thread(() -> {
+				if (results != null) {
+					try {
+						displayStatus("Saving Graph...");
+						String fileName = graphicsPanel.saveGraph();
+						displayStatus("Saved graph as " + fileName + ".");
+					} catch (CancellationException e) {
+						displayStatus("Saving graph cancelled.");
+					} catch (IOException e) {
+						displayStatus("Saving graph failed.");
+					}
 				}
-			}
-		}).start();
+			}).start();
+		}
 	}
 	
 	private void saveHistogram() {
-		new Thread(() -> {
-			if (results != null) {
-				try {
-					displayStatus("Saving histogram...");
-					String fileName = statsPanel.saveHistogram();
-					displayStatus("Saved histogram as " + fileName + ".");
-				} catch (CancellationException e) {
-					displayStatus("Saving histogram Cancelled.");
-				} catch (IOException e) {
-					displayStatus("Saving histogram Failed.");
+		if (results == null) {
+			displayStatus("Need results first!");
+		} else {
+			new Thread(() -> {
+				if (results != null) {
+					try {
+						displayStatus("Saving histogram...");
+						String fileName = statsPanel.saveHistogram();
+						displayStatus("Saved histogram as " + fileName + ".");
+					} catch (CancellationException e) {
+						displayStatus("Saving histogram Cancelled.");
+					} catch (IOException e) {
+						displayStatus("Saving histogram Failed.");
+					}
 				}
-			}
-		}).start();
+			}).start();
+		}
 	}
 	
 	private void saveStats() {
-		new Thread(() -> {
-			try {
-				displayStatus("Saving stats summary...");
-				String fileName = statsPanel.saveStatsSummary();
-				displayStatus("Saved stats summary as " + fileName + ".");
-			} catch (CancellationException e) {
-				displayStatus("Saving stats summary cancelled.");
-			} catch (FileNotFoundException e) {
-				displayStatus("Saving stats summary failed.");
-			}
-		}).start();
+		if (results == null) {
+			displayStatus("Need results first!");
+		} else {
+			new Thread(() -> {
+				try {
+					displayStatus("Saving stats summary...");
+					String fileName = statsPanel.saveStatsSummary();
+					displayStatus("Saved stats summary as " + fileName + ".");
+				} catch (CancellationException e) {
+					displayStatus("Saving stats summary cancelled.");
+				} catch (FileNotFoundException e) {
+					displayStatus("Saving stats summary failed.");
+				}
+			}).start();
+		}
 	}
 	
 	private void saveText() {
-		new Thread(() -> {
-			try {
-				displayStatus("Saving results text...");
-				String fileName = FileUtils.saveTextAs(results.longString(), "Save Results As");
-				displayStatus("Saved results text as " + fileName + ".");
-			} catch (CancellationException e) {
-				displayStatus("Saving results text cancelled.");
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		}).start();
+		if (results == null) {
+			displayStatus("Need results first!");
+		} else {
+			new Thread(() -> {
+				try {
+					displayStatus("Saving results text...");
+					String fileName = FileUtils.saveTextAs(results.longString(), "Save Results As");
+					displayStatus("Saved results text as " + fileName + ".");
+				} catch (CancellationException e) {
+					displayStatus("Saving results text cancelled.");
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			}).start();
+		}
 	}
 	
 	

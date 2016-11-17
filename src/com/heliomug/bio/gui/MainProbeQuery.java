@@ -29,10 +29,10 @@ import com.heliomug.bio.ProbeSet;
 import com.heliomug.bio.QueriableGenome;
 import com.heliomug.bio.repository.GenomeRepository;
 import com.heliomug.utils.FileUtils;
-import com.heliomug.utils.StatusDisplayer;
 import com.heliomug.utils.GlobalStatusDisplayer;
+import com.heliomug.utils.StatusDisplayer;
 
-public class ProbeQueryMachineGUI extends JFrame implements ActionListener, StatusDisplayer, StandardPanel {
+public class MainProbeQuery extends JFrame implements ActionListener, StatusDisplayer, StandardPanel {
 	private static final long serialVersionUID = -4721791747633762165L;
 
 	private static final String CURRENT_REPOSITORY_STRING = 	"Current Repository: \t%s";
@@ -45,7 +45,7 @@ public class ProbeQueryMachineGUI extends JFrame implements ActionListener, Stat
 	private static final int HISTOGRAM_WIDTH = 640;
 	private static final int HISTOGRAM_HEIGHT = 360;
 	
-	private static ProbeQueryMachineGUI instance;
+	private static MainProbeQuery instance;
 	
 	private QueriableGenome repo;
 	private ProbeSet results;
@@ -63,10 +63,10 @@ public class ProbeQueryMachineGUI extends JFrame implements ActionListener, Stat
 	private GraphicsPanel graphicsPanel;
 	private TextPanel textPanel;
 	
-	public ProbeQueryMachineGUI(String title) {
+	public MainProbeQuery(String title) {
 		super(title);
 		
-		ProbeQueryMachineGUI.instance = this;
+		MainProbeQuery.instance = this;
 		GlobalStatusDisplayer.setStatusDisplayer(this);
 		
 		this.repo = null;
@@ -79,7 +79,7 @@ public class ProbeQueryMachineGUI extends JFrame implements ActionListener, Stat
 		this.repaint();
 	}
 	
-	public static ProbeQueryMachineGUI get() {
+	public static MainProbeQuery get() {
 		return instance;
 	}
 
@@ -224,7 +224,7 @@ public class ProbeQueryMachineGUI extends JFrame implements ActionListener, Stat
 	}
 
 	
-	private String getRepositoryString() {
+	public String getRepositoryString() {
 		if (repo == null) {
 			return "[no repository]";
 		} else {
@@ -232,7 +232,7 @@ public class ProbeQueryMachineGUI extends JFrame implements ActionListener, Stat
 		}
 	}
 
-	private String getQueryString() {
+	public String getQueryString() {
 		if (currentQuery == null) {
 			return "[no query]";
 		} else {
@@ -457,7 +457,7 @@ public class ProbeQueryMachineGUI extends JFrame implements ActionListener, Stat
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(() -> {
-			ProbeQueryMachineGUI frame = new ProbeQueryMachineGUI("Probe Querier");
+			MainProbeQuery frame = new MainProbeQuery("Probe Querier");
 			frame.setVisible(true);
 		});
 	}

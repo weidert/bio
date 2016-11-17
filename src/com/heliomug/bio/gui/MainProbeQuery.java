@@ -30,9 +30,9 @@ import com.heliomug.bio.QueriableGenome;
 import com.heliomug.bio.repository.GenomeRepository;
 import com.heliomug.utils.FileUtils;
 import com.heliomug.utils.GlobalStatusDisplayer;
-import com.heliomug.utils.StatusDisplayer;
+import com.heliomug.utils.StatusDisplay;
 
-public class MainProbeQuery extends JFrame implements ActionListener, StatusDisplayer, StandardPanel {
+public class MainProbeQuery extends JFrame implements ActionListener, StatusDisplay, StandardPanel {
 	private static final long serialVersionUID = -4721791747633762165L;
 
 	private static final String CURRENT_REPOSITORY_STRING = 	"Current Repository: \t%s";
@@ -318,8 +318,8 @@ public class MainProbeQuery extends JFrame implements ActionListener, StatusDisp
 	}
 	
 	private void openRepository() {
-		//File inputDirectory = new File("/home/cweidert/prog/data/biodiscovery/repo1"); 
-		File inputDirectory = FileUtils.selectDirectory("Select Repository Directory to Load");
+		File inputDirectory = new File("/home/cweidert/prog/data/biodiscovery/repository"); 
+		//File inputDirectory = FileUtils.selectDirectory("Select Repository Directory to Load");
 		if (inputDirectory != null) {
 			Thread t = new Thread(() -> {
 				try {

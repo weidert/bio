@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import com.heliomug.bio.repository.GenomeRepository;
-import com.heliomug.utils.StatusDisplayer;
+import com.heliomug.utils.StatusDisplay;
 import com.heliomug.utils.GlobalStatusDisplayer;
 
 /**
@@ -18,7 +18,7 @@ import com.heliomug.utils.GlobalStatusDisplayer;
 public class CommandLineTool {
 	private QueriableGenome repo;
 
-	private StatusDisplayer sd;
+	private StatusDisplay sd;
 	
 	private CommandLineTool() {
 		sd = GlobalStatusDisplayer.get();

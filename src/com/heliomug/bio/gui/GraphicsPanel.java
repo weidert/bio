@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Function;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -15,7 +14,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.heliomug.bio.Probe;
 import com.heliomug.bio.ProbeAttribute;
 import com.heliomug.bio.ProbeSet;
 import com.heliomug.utils.FileUtils;
@@ -123,7 +121,6 @@ public class GraphicsPanel extends JPanel implements ActionListener {
 		repaint();
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void showGraphics() {
 		if (results != null) {
 			executeButton.setEnabled(false);
@@ -131,9 +128,9 @@ public class GraphicsPanel extends JPanel implements ActionListener {
 			illustrationPanel.fillFromResults(
 				results, 
 				(String)chromoSelector.getSelectedItem(),
-				(Function<Probe, Double>)xSelector.getSelectedItem(),
-				(Function<Probe, Double>)ySelector.getSelectedItem(),
-				(Function<Probe, Double>)colorSelector.getSelectedItem()
+				(ProbeAttribute)xSelector.getSelectedItem(),
+				(ProbeAttribute)ySelector.getSelectedItem(),
+				(ProbeAttribute)colorSelector.getSelectedItem()
 			);
 			repaint();
 			executeButton.setEnabled(true);

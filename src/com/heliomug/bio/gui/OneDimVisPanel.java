@@ -90,12 +90,14 @@ public class OneDimVisPanel extends StandardPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("SHOW STATS")) {
 			new Thread(() -> {
+				MainProbeQuery.get().displayStatus("Drawing histogram...");
 				DataSet data = getDataSet();
 				ProbeAttribute attr = (ProbeAttribute)selector.getSelectedItem();
 				int bins = (int)binsSpinner.getValue();
 				histogramPanel.display(attr, data, bins);
 				statsInfoPanel.displayStats(data);
 				this.repaint();
+				MainProbeQuery.get().displayStatus("Histogram complete.");
 			}).start();
 		}
 	}

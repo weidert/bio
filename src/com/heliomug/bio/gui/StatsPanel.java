@@ -68,8 +68,8 @@ public class StatsPanel extends JPanel implements ActionListener, StandardPanel 
 	
 	public String saveStatsSummary() throws FileNotFoundException {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Repository: " + MainProbeQuery.get().getRepositoryString() + "\n");
-		sb.append("Query: " + MainProbeQuery.get().getQueryString() + "\n");
+		sb.append("Repository: \t" + MainProbeQuery.get().getRepositoryString() + "\n");
+		sb.append("Query: \t" + MainProbeQuery.get().getQueryString() + "\n");
 		sb.append(getDataSet().statsSummary());
 		return FileUtils.saveTextAs(sb.toString(), "Save Results As");
 	}

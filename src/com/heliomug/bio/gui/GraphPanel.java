@@ -69,12 +69,13 @@ public class GraphPanel extends StandardPanel {
 	}
 
 	public void fillFromResults(
-			ProbeSet results, 
+			ProbeSet preFilteredResults, 
 			String chromo,
 			ProbeAttribute xAttr, 
 			ProbeAttribute yAttr, 
 			ProbeAttribute zAttr
 	){
+		results = preFilteredResults.filterByChromo(chromo);
 		this.xAttr = xAttr;
 		this.yAttr = yAttr;
 		this.zAttr = zAttr;
@@ -82,7 +83,6 @@ public class GraphPanel extends StandardPanel {
 		this.xData = results.getDataSet(xAttr);
 		this.yData = results.getDataSet(yAttr);
 		this.zData = results.getDataSet(zAttr);
-		this.results = results.filterByChromo(chromo);
 		if (results != null) {
 			MainProbeQuery.get().displayStatus("Processing points for graph...");
 			double[] xNorm = getNormZeroOne(xData);

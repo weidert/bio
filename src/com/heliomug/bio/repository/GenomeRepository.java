@@ -17,7 +17,7 @@ import com.heliomug.bio.Probe;
 import com.heliomug.bio.ProbeSet;
 import com.heliomug.bio.QueriableGenome;
 import com.heliomug.utils.FileUtils;
-import com.heliomug.utils.StatusDisplayerSingleton;
+import com.heliomug.utils.GlobalStatusDisplayer;
 
 public class GenomeRepository implements QueriableGenome, Serializable {
 	private static final long serialVersionUID = -4433104723700695892L;
@@ -40,7 +40,8 @@ public class GenomeRepository implements QueriableGenome, Serializable {
 		chromoList = new ArrayList<>();
 	}
 
-	public static GenomeRepository createRepository(File inputFile, File baseDirectory) throws FileNotFoundException, IOException, ClassNotFoundException {
+	public static GenomeRepository createRepository(File inputFile, File baseDirectory) 
+	throws FileNotFoundException, IOException, ClassNotFoundException {
 		GenomeRepository repo = new GenomeRepository(baseDirectory);
 		
 		Runnable fileReader = () -> {
@@ -58,7 +59,7 @@ public class GenomeRepository implements QueriableGenome, Serializable {
 					Probe p = new Probe(line);
 					String chromo = p.getChromosome();
 					if (!repo.chromoList.contains(chromo)) {
-						StatusDisplayerSingleton.getStatusDisplayer().displayStatus("Read new chromosome " + chromo + "...");
+						GlobalStatusDisplayer.get().displayStatus("Read new chromosome " + chromo + "...");
 
 						if (oldChromo != "") probeMap.get(oldChromo).put(DUMMY_PROBE);
 						
@@ -77,7 +78,7 @@ public class GenomeRepository implements QueriableGenome, Serializable {
 					probeMap.get(chromo).put(p);
 					count++;
 					if (count % STATUS_DISPLAY_MOD == 0) {
-						StatusDisplayerSingleton.getStatusDisplayer().displayStatus(count + " lines read...");
+						GlobalStatusDisplayer.get().displayStatus(count + " lines read...");
 					}
 					oldChromo = chromo; 
 				}
@@ -90,7 +91,7 @@ public class GenomeRepository implements QueriableGenome, Serializable {
 					t.join();
 				}
 				
-				StatusDisplayerSingleton.getStatusDisplayer().displayStatus("Finished processing file!");
+				GlobalStatusDisplayer.get().displayStatus("Finished processing file!");
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (InterruptedException e) {
@@ -113,12 +114,13 @@ public class GenomeRepository implements QueriableGenome, Serializable {
 		return repo;
 	}
 	
-	public static GenomeRepository loadRepository(File baseDirectory) throws FileNotFoundException, ClassNotFoundException, IOException {
+	public static GenomeRepository loadRepository(File baseDirectory) 
+	throws FileNotFoundException, ClassNotFoundException, IOException {
 		String path = baseDirectory + File.separator + REPOSITORY_FILE_NAME;
 		GenomeRepository repo =  (GenomeRepository) FileUtils.readObject(path);
 		repo.repoMap = new HashMap<>();
 		for (String chromo : repo.chromoList) {
-			ChromosomeRepository chromoRepo = ChromosomeRepository.loadExistingProbeRepositoryFromFile(chromo, baseDirectory);
+			ChromosomeRepository chromoRepo = ChromosomeRepository.loadExistingRepository(chromo, baseDirectory);
 			repo.repoMap.put(chromo, chromoRepo);
 		}
 		return repo;
@@ -139,7 +141,8 @@ public class GenomeRepository implements QueriableGenome, Serializable {
 		return chromoList;
 	}
 	
-	public ProbeSet query(GenomeQuery query) throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
+	public ProbeSet query(GenomeQuery query) 
+	throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
 		getChromoList();
 		ProbeSet results = new ProbeSet();
 		String startChromo = query.getStartChromo();
@@ -185,15 +188,16 @@ public class GenomeRepository implements QueriableGenome, Serializable {
 					}
 				}
 			} catch (InterruptedException | ClassNotFoundException | IOException e) {
-				StatusDisplayerSingleton.getStatusDisplayer().displayStatus("ERROR: not able to fill chromosome " + chromosome + "!");
+				GlobalStatusDisplayer.get().displayStatus("ERROR: not able to fill chromosome " + chromosome + "!");
 				e.printStackTrace();
 			}
-			StatusDisplayerSingleton.getStatusDisplayer().displayStatus("chromosome filler thread for chromosome " + chromosome + " finishing...");
+			GlobalStatusDisplayer.get().displayStatus("filler thread for chromosome " + chromosome + " finishing...");
 		}
 	}
 	
 	
-	public static void maing(String[] args) throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
+	public static void maing(String[] args) 
+	throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
 		File baseDirectory = new File("/home/cweidert/prog/data/biodiscovery/repo1");
 		//File inputFile = new File("/home/cweidert/prog/data/biodiscovery/probes.txt");
 		//GenomeRepository repo = createRepository(inputFile, baseDirectory);

@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 import com.heliomug.bio.Probe;
 import com.heliomug.bio.ProbeSet;
-import com.heliomug.utils.StatusDisplayerSingleton;
+import com.heliomug.utils.GlobalStatusDisplayer;
 
 public class ChromosomeRepository {
 	private static final int MAX_PROBE_LENGTH = 100;
@@ -18,7 +18,8 @@ public class ChromosomeRepository {
 	private File baseDirectory;
 	private String chromosome;
 	
-	public ChromosomeRepository(String chromo, File baseDirectory, boolean isNew) throws FileNotFoundException, ClassNotFoundException, IOException {
+	public ChromosomeRepository(String chromo, File baseDirectory, boolean isNew) 
+	throws FileNotFoundException, ClassNotFoundException, IOException {
 		this.isNew = isNew;
 		this.baseDirectory = baseDirectory;
 		this.chromosome = chromo;
@@ -40,13 +41,15 @@ public class ChromosomeRepository {
 		return this.chromosome;
 	}
 	
-	public static ChromosomeRepository loadExistingProbeRepositoryFromFile(String chromo, File baseDirectory) throws FileNotFoundException, ClassNotFoundException, IOException {
+	public static ChromosomeRepository loadExistingRepository(String chromo, File baseDirectory) 
+	throws FileNotFoundException, ClassNotFoundException, IOException {
 		return new ChromosomeRepository(chromo, baseDirectory, false);
 	}
 	
-	public static ChromosomeRepository constructProbeRepositoryFromFile(String chromo, File baseDirectory, File inputFile) throws FileNotFoundException, ClassNotFoundException, IOException {
+	public static ChromosomeRepository constructProbeRepositoryFromFile(String chromo, File baseDirectory, File inFile) 
+	throws FileNotFoundException, ClassNotFoundException, IOException {
 		ChromosomeRepository repo = new ChromosomeRepository(chromo, baseDirectory, true);
-		repo.addProbesFromFile(inputFile);
+		repo.addProbesFromFile(inFile);
 		return repo;
 	}
 
@@ -59,10 +62,10 @@ public class ChromosomeRepository {
 				add(p);
 				count++;
 				if (count % 10_000 == 0) {
-					StatusDisplayerSingleton.getStatusDisplayer().displayStatus(count);
+					GlobalStatusDisplayer.get().displayStatus(count);
 				}
 			}
-			StatusDisplayerSingleton.getStatusDisplayer().displayStatus(count + " lines read...");
+			GlobalStatusDisplayer.get().displayStatus(count + " lines read...");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -84,15 +87,17 @@ public class ChromosomeRepository {
 		return newDir;
 	}
 	
-	public ProbeSet queryAll() throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
-		StatusDisplayerSingleton.getStatusDisplayer().displayStatus("querying all in " + chromosome + "...");
+	public ProbeSet queryAll() 
+	throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
+		GlobalStatusDisplayer.get().displayStatus("querying all in " + chromosome + "...");
 		ProbeSet results = new ProbeSet();
 		byStart.queryAll(results);
 		return results;
 	}
 			
-	public ProbeSet query(int startKey, int endKey) throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
-		StatusDisplayerSingleton.getStatusDisplayer().displayStatus("querying " + startKey + " -> " + endKey + " in " + chromosome + "...");
+	public ProbeSet query(int startKey, int endKey) 
+	throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
+		GlobalStatusDisplayer.get().displayStatus("search " + startKey + " -> " + endKey + " in " + chromosome + "...");
 		ProbeSet results = new ProbeSet();
 		byStart.query(results, startKey - MAX_PROBE_LENGTH, endKey);
 		results.filter(startKey, endKey);
@@ -101,24 +106,11 @@ public class ChromosomeRepository {
 	
 	public void flush() throws FileNotFoundException, IOException {
 		if (isNew) {
-			StatusDisplayerSingleton.getStatusDisplayer().displayStatus("Saving repository for chromosome " + chromosome + " to disk...");
+			GlobalStatusDisplayer.get().displayStatus("Saving repository for chromosome " + chromosome + " to disk...");
 			byStart.flush();
 			//byEnd.flush();
 			//byInterval.flush();
-			StatusDisplayerSingleton.getStatusDisplayer().displayStatus("Saving for chromosome " + chromosome + " completed...");
+			GlobalStatusDisplayer.get().displayStatus("Saving for chromosome " + chromosome + " completed...");
 		}
 	}
-	
-	public static void maing(String[] args) throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
-		File baseDirectory = new File("/home/cweidert/prog/data/biodiscovery/repo1");
-		File inputFile = new File("/home/cweidert/prog/data/biodiscovery/chr1.txt");
-		ChromosomeRepository pr = constructProbeRepositoryFromFile("chr1", baseDirectory, inputFile);
-		//ChromosomeRepository pr = loadExistingProbeRepositoryFromFile("chr1", baseDirectory);
-		ProbeSet results = pr.query(98590, 98600);
-		System.out.println(results.size() + " results: ");
-		System.out.println(results);
-		pr.flush();
-		System.out.println("done");
-	}
-	
 }

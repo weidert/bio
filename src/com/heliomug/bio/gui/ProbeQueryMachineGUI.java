@@ -30,9 +30,9 @@ import com.heliomug.bio.QueriableGenome;
 import com.heliomug.bio.repository.GenomeRepository;
 import com.heliomug.utils.FileUtils;
 import com.heliomug.utils.StatusDisplayer;
-import com.heliomug.utils.StatusDisplayerSingleton;
+import com.heliomug.utils.GlobalStatusDisplayer;
 
-public class MainFrame extends JFrame implements ActionListener, StatusDisplayer, StandardPanel {
+public class ProbeQueryMachineGUI extends JFrame implements ActionListener, StatusDisplayer, StandardPanel {
 	private static final long serialVersionUID = -4721791747633762165L;
 
 	private static final String CURRENT_REPOSITORY_STRING = 	"Current Repository: \t%s";
@@ -45,7 +45,7 @@ public class MainFrame extends JFrame implements ActionListener, StatusDisplayer
 	private static final int HISTOGRAM_WIDTH = 640;
 	private static final int HISTOGRAM_HEIGHT = 360;
 	
-	private static MainFrame instance;
+	private static ProbeQueryMachineGUI instance;
 	
 	private QueriableGenome repo;
 	private ProbeSet results;
@@ -63,11 +63,11 @@ public class MainFrame extends JFrame implements ActionListener, StatusDisplayer
 	private GraphicsPanel graphicsPanel;
 	private TextPanel textPanel;
 	
-	public MainFrame(String title) {
+	public ProbeQueryMachineGUI(String title) {
 		super(title);
 		
-		MainFrame.instance = this;
-		StatusDisplayerSingleton.setStatusDisplayer(this);
+		ProbeQueryMachineGUI.instance = this;
+		GlobalStatusDisplayer.setStatusDisplayer(this);
 		
 		this.repo = null;
 		this.results = null;
@@ -79,7 +79,7 @@ public class MainFrame extends JFrame implements ActionListener, StatusDisplayer
 		this.repaint();
 	}
 	
-	public static MainFrame get() {
+	public static ProbeQueryMachineGUI get() {
 		return instance;
 	}
 
@@ -344,7 +344,9 @@ public class MainFrame extends JFrame implements ActionListener, StatusDisplayer
 		if (inputFile != null && outputDirectory != null) {
 			Thread t = new Thread(() -> {
 				try {
-					displayStatus("Creating repository at " + outputDirectory.getAbsolutePath() + " from " + inputFile.getAbsolutePath() + "...");
+					String inPath = inputFile.getAbsolutePath();
+					String outPath = outputDirectory.getAbsolutePath();
+					displayStatus("Creating repository at " + outPath + " from " + inPath + "...");
 					GenomeRepository.createRepository(inputFile, outputDirectory);
 					setRepository(GenomeRepository.loadRepository(outputDirectory));
 					displayStatus("Repository created at " + outputDirectory.getAbsolutePath() + ".");
@@ -455,7 +457,7 @@ public class MainFrame extends JFrame implements ActionListener, StatusDisplayer
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(() -> {
-			MainFrame frame = new MainFrame("Probe Querier");
+			ProbeQueryMachineGUI frame = new ProbeQueryMachineGUI("Probe Querier");
 			frame.setVisible(true);
 		});
 	}

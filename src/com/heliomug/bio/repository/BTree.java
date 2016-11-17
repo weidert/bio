@@ -6,7 +6,6 @@ import java.util.function.Function;
 
 import com.heliomug.bio.Probe;
 import com.heliomug.bio.ProbeSet;
-import com.heliomug.bio.deprecated.NodeStoreMemory;
 
 public class BTree {
     private Function<Probe, Integer> keyFunction;
@@ -28,11 +27,13 @@ public class BTree {
     	store.getRoot().add(keyFunction.apply(p), p);
     }
 
-    public void queryAll(ProbeSet results) throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
+    public void queryAll(ProbeSet results)
+    throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
     	store.getRoot().queryAll(results);
     }
     
-    public void query(ProbeSet results, int keyStart, int keyFinish) throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
+    public void query(ProbeSet results, int keyStart, int keyFinish) 
+    throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
     	store.getRoot().query(results, keyStart, keyFinish);
     }
     
@@ -54,20 +55,5 @@ public class BTree {
 			e.printStackTrace();
 		}
         return "[NO STRING]";
-    }
-
-    public static void maing(String[] args) throws FileNotFoundException, ClassNotFoundException, IOException {
-        BTree tree = new BTree(new NodeStoreMemory<BTNode>(), false);
-        String chromo = "X";
-        for (int i = 0 ; i <= 32 ; i += 2) {
-            tree.add(new Probe(chromo, i, i + 1, 0));
-            System.out.println("adding " + i);
-            System.out.println(tree);
-        }
-        for (int i = -1 ; i <= 15 ; i += 2) {
-	        tree.add(new Probe(chromo, i, i + 1, 0));
-	        System.out.println("adding " + i);
-	        System.out.println(tree);
-        }
     }
 }

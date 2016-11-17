@@ -50,9 +50,9 @@ public class Probe implements Serializable {
     	
     	if (getClass() != otherObj.getClass()) return false;
     	
-    	Probe other = (Probe)otherObj;
+    	Probe oth = (Probe)otherObj;
     	
-    	return (start == other.start) && (end == other.end) && (value == other.value) && (chromosome.equals(other.chromosome));
+    	return (start == oth.start) && (end == oth.end) && (value == oth.value) && (chromosome.equals(oth.chromosome));
     	
     }
     

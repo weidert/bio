@@ -28,7 +28,8 @@ public class NodeStoreHybrid<T extends Node> implements NodeStore<T>, Serializab
 		entryMap = new HashMap<Long, T>();
 	}
 	
-	public static <T extends Node> NodeStoreHybrid<T> loadFromDisk(File directory) throws FileNotFoundException, ClassNotFoundException, IOException {
+	public static <T extends Node> NodeStoreHybrid<T> loadFromDisk(File directory) 
+	throws FileNotFoundException, ClassNotFoundException, IOException {
 		String path = directory.getPath() + File.separator + TREE_INFO_FILE_NAME;
 		@SuppressWarnings("unchecked")
 		NodeStoreHybrid<T> store = (NodeStoreHybrid<T>)FileUtils.readObject(new File(path));

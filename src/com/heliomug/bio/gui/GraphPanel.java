@@ -71,14 +71,14 @@ public class GraphPanel extends StandardPanel {
 	}
 
 	public void fillFromResults(
-			ProbeSet preFilteredResults, 
+			ProbeSet nonFilteredResults, 
 			String chromo,
 			ProbeAttribute xAttr, 
 			ProbeAttribute yAttr, 
 			ProbeAttribute zAttr
 	){
 		currentChromo = chromo;
-		results = preFilteredResults.filterByChromo(chromo);
+		results = nonFilteredResults.filterByChromo(chromo);
 		this.xAttr = xAttr;
 		this.yAttr = yAttr;
 		this.zAttr = zAttr;
@@ -151,7 +151,7 @@ public class GraphPanel extends StandardPanel {
 		super.paint(gee);
 		Graphics2D g = (Graphics2D)gee;
 		
-		if (points != null) {
+		if (points != null && colorVals != null) {
 			for (int i = 0 ; i < points.size() ; i++) {
 				if (i == highlightedProbeIndex) {
 					g.setColor(HIGHLIGHT_COLOR);

@@ -108,7 +108,7 @@ public class BTNode implements Node, Serializable {
     
     public void queryAll(ProbeSet results)
     throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
-    	Thread.sleep(1);
+    	Thread.sleep(0);
     	for (Entry entry : entries) {
     		if (entry != null) results.add(entry.probe);
     	}
@@ -121,7 +121,7 @@ public class BTNode implements Node, Serializable {
     
     public void query(ProbeSet results, int keyStart, int keyFinish) 
     throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
-    	Thread.sleep(1);
+    	Thread.sleep(0);
     	int first = getInsertionIndexFront(keyStart);
     	int last = getInsertionIndexBack(keyFinish) - 1;
     	

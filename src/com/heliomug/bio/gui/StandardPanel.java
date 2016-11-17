@@ -49,6 +49,10 @@ public abstract class StandardPanel extends JPanel {
 	}
 	
 	public void drawSubsubtitle(Graphics2D g, String subtitle) {
+		drawString(g, MONOSPACE_STD, subtitle, getWidth() / 2, MARGIN * 3 / 4);
+	}
+	
+	public void drawFloorTitle(Graphics2D g, String subtitle) {
 		drawString(g, MONOSPACE_STD, subtitle, getWidth() / 2, getHeight() - MARGIN * 3 / 4);
 	}
 	

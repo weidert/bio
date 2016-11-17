@@ -44,6 +44,7 @@ public class GraphPanel extends StandardPanel {
 	private DataSet zData;
 	private ProbeAttribute yAttr;
 	private ProbeAttribute zAttr;
+	private String currentChromo;
 	
 	
 	public GraphPanel(int xSize, int ySize) {
@@ -55,6 +56,7 @@ public class GraphPanel extends StandardPanel {
 		xData = null;
 		yData = null;
 		zData = null;
+		currentChromo = null;
 		
 		this.addMouseListener(new MouseAdapter() {
 			@Override
@@ -75,6 +77,7 @@ public class GraphPanel extends StandardPanel {
 			ProbeAttribute yAttr, 
 			ProbeAttribute zAttr
 	){
+		currentChromo = chromo;
 		results = preFilteredResults.filterByChromo(chromo);
 		this.xAttr = xAttr;
 		this.yAttr = yAttr;
@@ -138,6 +141,7 @@ public class GraphPanel extends StandardPanel {
 		xData = null;
 		yData = null;
 		zData = null;
+		currentChromo = null;
 		highlightedProbeIndex = NO_RESULT_SELECTED;
 		repaint();
 	}
@@ -165,12 +169,12 @@ public class GraphPanel extends StandardPanel {
 			String title = yAttr.getName() + " vs " + xAttr.getName();
 			drawTitle(g, title);
 			String repoString = MainProbeQuery.get().getRepositoryString();
-			String queryString = MainProbeQuery.get().getQueryString();
-			String queryInfo = repoString + ", " + queryString;
-			drawSubtitle(g, queryInfo);
+			String queryString = MainProbeQuery.get().getQueryString() + " (" + currentChromo + " only)";
+			drawSubtitle(g, repoString);
+			drawSubsubtitle(g, queryString);
 			String colorAttr = zAttr.getName();
 			String colorText = String.format("Color (%s): %s (green) -> %s (red)", colorAttr, zData.min(), zData.max());
-			drawSubsubtitle(g, colorText);
+			drawFloorTitle(g, colorText);
 			
 			if (this.highlightedProbeIndex == NO_RESULT_SELECTED) {
 				MainProbeQuery.get().displayStatus("Graph drawing complete.  Click on a point for more info.");

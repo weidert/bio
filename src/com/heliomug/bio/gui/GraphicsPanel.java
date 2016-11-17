@@ -46,7 +46,7 @@ public class GraphicsPanel extends JPanel implements ActionListener {
 		results = null;
 		this.illustrationPanel = new GraphPanel(width, height);
 		
-		this.setBorder(ProbeQueryMachineGUI.STANDARD_BORDER);
+		this.setBorder(MainProbeQuery.STANDARD_BORDER);
 		this.setLayout(new BorderLayout());
 		this.add(illustrationPanel, BorderLayout.CENTER);
 		

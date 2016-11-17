@@ -29,10 +29,10 @@ import com.heliomug.bio.ProbeSet;
 import com.heliomug.bio.QueriableGenome;
 import com.heliomug.bio.repository.GenomeRepository;
 import com.heliomug.utils.FileUtils;
-import com.heliomug.utils.StatusDisplayer;
 import com.heliomug.utils.GlobalStatusDisplayer;
+import com.heliomug.utils.StatusDisplayer;
 
-public class ProbeQueryMachineGUI extends JFrame implements ActionListener, StatusDisplayer, StandardPanel {
+public class MainProbeQuery extends JFrame implements ActionListener, StatusDisplayer, StandardPanel {
 	private static final long serialVersionUID = -4721791747633762165L;
 
 	private static final String CURRENT_REPOSITORY_STRING = 	"Current Repository: \t%s";
@@ -45,7 +45,7 @@ public class ProbeQueryMachineGUI extends JFrame implements ActionListener, Stat
 	private static final int HISTOGRAM_WIDTH = 640;
 	private static final int HISTOGRAM_HEIGHT = 360;
 	
-	private static ProbeQueryMachineGUI instance;
+	private static MainProbeQuery instance;
 	
 	private QueriableGenome repo;
 	private ProbeSet results;
@@ -63,10 +63,10 @@ public class ProbeQueryMachineGUI extends JFrame implements ActionListener, Stat
 	private GraphicsPanel graphicsPanel;
 	private TextPanel textPanel;
 	
-	public ProbeQueryMachineGUI(String title) {
+	public MainProbeQuery(String title) {
 		super(title);
 		
-		ProbeQueryMachineGUI.instance = this;
+		MainProbeQuery.instance = this;
 		GlobalStatusDisplayer.setStatusDisplayer(this);
 		
 		this.repo = null;
@@ -79,7 +79,7 @@ public class ProbeQueryMachineGUI extends JFrame implements ActionListener, Stat
 		this.repaint();
 	}
 	
-	public static ProbeQueryMachineGUI get() {
+	public static MainProbeQuery get() {
 		return instance;
 	}
 
@@ -224,7 +224,7 @@ public class ProbeQueryMachineGUI extends JFrame implements ActionListener, Stat
 	}
 
 	
-	private String getRepositoryString() {
+	public String getRepositoryString() {
 		if (repo == null) {
 			return "[no repository]";
 		} else {
@@ -232,7 +232,7 @@ public class ProbeQueryMachineGUI extends JFrame implements ActionListener, Stat
 		}
 	}
 
-	private String getQueryString() {
+	public String getQueryString() {
 		if (currentQuery == null) {
 			return "[no query]";
 		} else {
@@ -361,63 +361,79 @@ public class ProbeQueryMachineGUI extends JFrame implements ActionListener, Stat
 	
 	
 	private void saveGraph() {
-		new Thread(() -> {
-			if (results != null) {
-				try {
-					displayStatus("Saving Graph...");
-					String fileName = graphicsPanel.saveGraph();
-					displayStatus("Saved graph as " + fileName + ".");
-				} catch (CancellationException e) {
-					displayStatus("Saving graph cancelled.");
-				} catch (IOException e) {
-					displayStatus("Saving graph failed.");
+		if (results == null) {
+			displayStatus("Need results first!");
+		} else {
+			new Thread(() -> {
+				if (results != null) {
+					try {
+						displayStatus("Saving Graph...");
+						String fileName = graphicsPanel.saveGraph();
+						displayStatus("Saved graph as " + fileName + ".");
+					} catch (CancellationException e) {
+						displayStatus("Saving graph cancelled.");
+					} catch (IOException e) {
+						displayStatus("Saving graph failed.");
+					}
 				}
-			}
-		}).start();
+			}).start();
+		}
 	}
 	
 	private void saveHistogram() {
-		new Thread(() -> {
-			if (results != null) {
-				try {
-					displayStatus("Saving histogram...");
-					String fileName = statsPanel.saveHistogram();
-					displayStatus("Saved histogram as " + fileName + ".");
-				} catch (CancellationException e) {
-					displayStatus("Saving histogram Cancelled.");
-				} catch (IOException e) {
-					displayStatus("Saving histogram Failed.");
+		if (results == null) {
+			displayStatus("Need results first!");
+		} else {
+			new Thread(() -> {
+				if (results != null) {
+					try {
+						displayStatus("Saving histogram...");
+						String fileName = statsPanel.saveHistogram();
+						displayStatus("Saved histogram as " + fileName + ".");
+					} catch (CancellationException e) {
+						displayStatus("Saving histogram Cancelled.");
+					} catch (IOException e) {
+						displayStatus("Saving histogram Failed.");
+					}
 				}
-			}
-		}).start();
+			}).start();
+		}
 	}
 	
 	private void saveStats() {
-		new Thread(() -> {
-			try {
-				displayStatus("Saving stats summary...");
-				String fileName = statsPanel.saveStatsSummary();
-				displayStatus("Saved stats summary as " + fileName + ".");
-			} catch (CancellationException e) {
-				displayStatus("Saving stats summary cancelled.");
-			} catch (FileNotFoundException e) {
-				displayStatus("Saving stats summary failed.");
-			}
-		}).start();
+		if (results == null) {
+			displayStatus("Need results first!");
+		} else {
+			new Thread(() -> {
+				try {
+					displayStatus("Saving stats summary...");
+					String fileName = statsPanel.saveStatsSummary();
+					displayStatus("Saved stats summary as " + fileName + ".");
+				} catch (CancellationException e) {
+					displayStatus("Saving stats summary cancelled.");
+				} catch (FileNotFoundException e) {
+					displayStatus("Saving stats summary failed.");
+				}
+			}).start();
+		}
 	}
 	
 	private void saveText() {
-		new Thread(() -> {
-			try {
-				displayStatus("Saving results text...");
-				String fileName = FileUtils.saveTextAs(results.longString(), "Save Results As");
-				displayStatus("Saved results text as " + fileName + ".");
-			} catch (CancellationException e) {
-				displayStatus("Saving results text cancelled.");
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		}).start();
+		if (results == null) {
+			displayStatus("Need results first!");
+		} else {
+			new Thread(() -> {
+				try {
+					displayStatus("Saving results text...");
+					String fileName = FileUtils.saveTextAs(results.longString(), "Save Results As");
+					displayStatus("Saved results text as " + fileName + ".");
+				} catch (CancellationException e) {
+					displayStatus("Saving results text cancelled.");
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			}).start();
+		}
 	}
 	
 	
@@ -457,7 +473,7 @@ public class ProbeQueryMachineGUI extends JFrame implements ActionListener, Stat
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(() -> {
-			ProbeQueryMachineGUI frame = new ProbeQueryMachineGUI("Probe Querier");
+			MainProbeQuery frame = new MainProbeQuery("Probe Querier");
 			frame.setVisible(true);
 		});
 	}

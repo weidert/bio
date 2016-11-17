@@ -57,7 +57,7 @@ public class GraphPanel extends JPanel implements StandardPanel {
 			}
 		});
 		this.setBackground(Color.WHITE);
-		this.setBorder(ProbeQueryMachineGUI.STANDARD_BORDER);
+		this.setBorder(MainProbeQuery.STANDARD_BORDER);
 
 		this.setPreferredSize(new Dimension(xSize, ySize));
 	}
@@ -133,7 +133,7 @@ public class GraphPanel extends JPanel implements StandardPanel {
 		
 		if (results != null) {
 			if (specialProbeIndex < 0) {
-				ProbeQueryMachineGUI.get().displayStatus("Starting Graph Drawing...");
+				MainProbeQuery.get().displayStatus("Starting Graph Drawing...");
 			}
 			double[] xNorm = normZeroOne(xFxn);
 			double[] yNorm = normZeroOne(yFxn);
@@ -150,7 +150,7 @@ public class GraphPanel extends JPanel implements StandardPanel {
 				g.draw(s);
 			}
 			if (specialProbeIndex < 0) {
-				ProbeQueryMachineGUI.get().displayStatus("Graph drawing complete.  Click on a point for more info");
+				MainProbeQuery.get().displayStatus("Graph drawing complete.  Click on a point for more info");
 			}
 		}
 	}

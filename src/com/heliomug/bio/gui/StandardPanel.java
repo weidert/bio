@@ -44,6 +44,18 @@ public abstract class StandardPanel extends JPanel {
 		}
 	}
 	
+	public void drawTitle(Graphics2D g, String title) {
+		drawString(g, MONOSPACE_DLX, title, getWidth() / 2, MARGIN / 4);
+	}
+	
+	public void drawSubsubtitle(Graphics2D g, String subtitle) {
+		drawString(g, MONOSPACE_STD, subtitle, getWidth() / 2, getHeight() - MARGIN * 3 / 4);
+	}
+	
+	public void drawSubtitle(Graphics2D g, String subtitle) {
+		drawString(g, MONOSPACE_STD, subtitle, getWidth() / 2, MARGIN / 2);
+	}
+	
 	public void drawString(Graphics2D g, Font font, Object text, int x, int y) {
 		drawString(g, font, text, x, y, false);
 	}

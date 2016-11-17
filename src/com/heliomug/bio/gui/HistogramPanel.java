@@ -64,7 +64,14 @@ public class HistogramPanel extends StandardPanel {
 				g.setColor(Color.BLACK);
 				g.draw(rect);
 			}
+			drawTitle(g, attr.getName());
 			drawAxis(g, data.min(), data.max(), attr.getName(), false); 
+			String title = attr.getName();
+			drawTitle(g, title);
+			String repoString = MainProbeQuery.get().getRepositoryString();
+			String queryString = MainProbeQuery.get().getQueryString();
+			String queryInfo = repoString + ", " + queryString;
+			drawSubtitle(g, queryInfo);
 		}
 	}
 }

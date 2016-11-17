@@ -160,12 +160,17 @@ public class GraphPanel extends StandardPanel {
 				g.draw(s);
 			}
 
-			String title = yAttr.getName() + " vs " + xAttr.getName();
-			super.drawString(g, MONOSPACE_DLX, title, getWidth() / 2, MARGIN / 4);
 			drawAxis(g, xData.min(), xData.max(), xAttr.getName(), false); 
 			drawAxis(g, yData.min(), yData.max(), yAttr.getName(), true); 
-			String colorText = "Color (" + zAttr.getName() + "): " + zData.min() + " (green) -> " + zData.max() + "(red)";
-			super.drawString(g, MONOSPACE_STD, colorText, getWidth() / 2, MARGIN * 5 / 8);
+			String title = yAttr.getName() + " vs " + xAttr.getName();
+			drawTitle(g, title);
+			String repoString = MainProbeQuery.get().getRepositoryString();
+			String queryString = MainProbeQuery.get().getQueryString();
+			String queryInfo = repoString + ", " + queryString;
+			drawSubtitle(g, queryInfo);
+			String colorAttr = zAttr.getName();
+			String colorText = String.format("Color (%s): %s (green) -> %s (red)", colorAttr, zData.min(), zData.max());
+			drawSubsubtitle(g, colorText);
 			
 			if (this.highlightedProbeIndex == NO_RESULT_SELECTED) {
 				MainProbeQuery.get().displayStatus("Graph drawing complete.  Click on a point for more info.");

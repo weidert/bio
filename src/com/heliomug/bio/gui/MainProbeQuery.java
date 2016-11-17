@@ -325,8 +325,8 @@ public class MainProbeQuery extends JFrame implements ActionListener, StatusDisp
 	}
 	
 	private void openRepository() {
-		File inputDirectory = new File("/home/cweidert/prog/data/biodiscovery/repository"); 
-		//File inputDirectory = FileUtils.selectDirectory("Select Repository Directory to Load");
+		//File inputDirectory = new File("/home/cweidert/prog/data/biodiscovery/repository"); 
+		File inputDirectory = FileUtils.selectDirectory("Select Repository Directory to Load");
 		if (inputDirectory != null) {
 			Thread t = new Thread(() -> {
 				try {

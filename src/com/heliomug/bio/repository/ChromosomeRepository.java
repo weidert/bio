@@ -97,7 +97,7 @@ public class ChromosomeRepository {
 			
 	public ProbeSet query(int startKey, int endKey) 
 	throws InterruptedException, FileNotFoundException, ClassNotFoundException, IOException {
-		GlobalStatusDisplayer.get().displayStatus("search " + startKey + " -> " + endKey + " in " + chromosome + "...");
+		GlobalStatusDisplayer.get().displayStatus("querying " + startKey + " -> " + endKey + " in " + chromosome + "...");
 		ProbeSet results = new ProbeSet();
 		byStart.query(results, startKey - MAX_PROBE_LENGTH, endKey);
 		results.filter(startKey, endKey);

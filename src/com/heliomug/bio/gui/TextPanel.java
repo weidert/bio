@@ -1,12 +1,11 @@
 package com.heliomug.bio.gui;
 
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import com.heliomug.bio.ProbeSet;
 
-public class TextPanel extends JPanel implements StandardPanel {
+public class TextPanel extends StandardPanel {
 	private static final long serialVersionUID = 2099539043705227472L;
 
 	private static final int TEXT_RESULT_LIMIT = 1000000;

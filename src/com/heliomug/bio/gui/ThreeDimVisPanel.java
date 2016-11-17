@@ -24,7 +24,7 @@ import com.heliomug.utils.FileUtils;
  * @author cweidert
  *
  */
-public class GraphicsPanel extends JPanel implements ActionListener {
+public class ThreeDimVisPanel extends StandardPanel implements ActionListener {
 	private static final long serialVersionUID = -396497902138438977L;
 
 	private GraphPanel illustrationPanel;
@@ -38,13 +38,13 @@ public class GraphicsPanel extends JPanel implements ActionListener {
 
 	private ProbeSet results;
 	
-	public GraphicsPanel(int width, int height) {
+	public ThreeDimVisPanel(int width, int height) {
 		super();
 		
 		results = null;
 		this.illustrationPanel = new GraphPanel(width, height);
 		
-		this.setBorder(MainProbeQuery.STANDARD_BORDER);
+		this.setBorder(STANDARD_BORDER);
 		this.setLayout(new BorderLayout());
 		this.add(illustrationPanel, BorderLayout.CENTER);
 		
@@ -72,14 +72,6 @@ public class GraphicsPanel extends JPanel implements ActionListener {
 		executeButton.addActionListener(this);
 		executeButton.setEnabled(false);
 		subsubpanel.add(executeButton);
-		/*
-		cancelButton = new JButton("Cancel Visualization");
-		cancelButton.setActionCommand("CANCEL GRAPHICS");
-		cancelButton.setMnemonic(KeyEvent.VK_L);
-		cancelButton.addActionListener(this);
-		cancelButton.setEnabled(false);
-		subsubpanel.add(cancelButton);
-		*/
 		subpanel.add(subsubpanel, BorderLayout.SOUTH);
 		this.add(subpanel, BorderLayout.SOUTH);
 	}

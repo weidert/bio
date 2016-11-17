@@ -12,8 +12,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JPanel;
-
 import com.heliomug.bio.ProbeAttribute;
 import com.heliomug.bio.ProbeSet;
 import com.heliomug.utils.DataSet;
@@ -26,31 +24,37 @@ import com.heliomug.utils.StatusDisplay;
  * @author cweidert
  *
  */
-public class GraphPanel extends JPanel implements StandardPanel {
+public class GraphPanel extends StandardPanel {
 	private static final long serialVersionUID = 1452297830452829273L;
 
+	private static final int NO_RESULT_SELECTED = -1;
+	
 	private static final double ELLIPSE_RADIUS = 5; 
 	
 	private static final Color HIGHLIGHT_COLOR = Color.BLUE;
 	
 	private ProbeSet results;
-	/*
-	private Function<Probe, Double> xFxn;
-	private Function<Probe, Double> yFxn;
-	private Function<Probe, Double> zFxn;
-	*/
-	
+
 	private int highlightedProbeIndex;
-	
 	private List<Shape> points;
 	private double[] colorVals;
+	private ProbeAttribute xAttr;
+	private DataSet xData;
+	private DataSet yData;
+	private DataSet zData;
+	private ProbeAttribute yAttr;
+	private ProbeAttribute zAttr;
+	
 	
 	public GraphPanel(int xSize, int ySize) {
 		super();
 		results = null;
-		highlightedProbeIndex = -1;
+		highlightedProbeIndex = NO_RESULT_SELECTED;
 		points = null;
 		colorVals = null;
+		xData = null;
+		yData = null;
+		zData = null;
 		
 		this.addMouseListener(new MouseAdapter() {
 			@Override
@@ -59,7 +63,7 @@ public class GraphPanel extends JPanel implements StandardPanel {
 			}
 		});
 		this.setBackground(Color.WHITE);
-		this.setBorder(MainProbeQuery.STANDARD_BORDER);
+		this.setBorder(STANDARD_BORDER);
 
 		this.setPreferredSize(new Dimension(xSize, ySize));
 	}
@@ -71,13 +75,19 @@ public class GraphPanel extends JPanel implements StandardPanel {
 			ProbeAttribute yAttr, 
 			ProbeAttribute zAttr
 	){
-		this.results = results.filterByChromo(chromo);
+		this.xAttr = xAttr;
+		this.yAttr = yAttr;
+		this.zAttr = zAttr;
 		points = new ArrayList<>();
+		this.xData = results.getDataSet(xAttr);
+		this.yData = results.getDataSet(yAttr);
+		this.zData = results.getDataSet(zAttr);
+		this.results = results.filterByChromo(chromo);
 		if (results != null) {
 			MainProbeQuery.get().displayStatus("Processing points for graph...");
-			double[] xNorm = normZeroOne(xAttr);
-			double[] yNorm = normZeroOne(yAttr);
-			colorVals = normZeroOne(zAttr);
+			double[] xNorm = getNormZeroOne(xData);
+			double[] yNorm = getNormZeroOne(yData);
+			colorVals = getNormZeroOne(results.getDataSet(zAttr));
 			for (int i = 0 ; i < results.size() ; i++) {
 				Shape s = getPoint(xNorm[i], yNorm[i]);
 				points.add(s);
@@ -108,16 +118,12 @@ public class GraphPanel extends JPanel implements StandardPanel {
 		}
 	}
 	
-	private double[] normZeroOne(ProbeAttribute attr) {
-		double[] toRet = new double[results.size()];
-		for (int i = 0 ; i < results.size() ; i++) {
-			toRet[i] = attr.apply(results.get(i));
-		}
-		double max = new DataSet(toRet).max();
-		double min = new DataSet(toRet).min();
-		double dist = max - min;
-		for (int i = 0 ; i < toRet.length ; i++) {
-			toRet[i] = (toRet[i] - min) / dist;
+	private double[] getNormZeroOne(DataSet data) {
+		double[] toRet = new double[data.size()];
+		double range = data.range();
+		double min = data.min();
+		for (int i = 0 ; i < data.size() ; i++) {
+			toRet[i] = (data.get(i) - min) / range;
 		}
 		return toRet;
 	}
@@ -126,7 +132,13 @@ public class GraphPanel extends JPanel implements StandardPanel {
 		results = null;
 		points = null;
 		colorVals = null;
-		highlightedProbeIndex = -1;
+		xAttr = null;
+		yAttr = null;
+		zAttr = null;
+		xData = null;
+		yData = null;
+		zData = null;
+		highlightedProbeIndex = NO_RESULT_SELECTED;
 		repaint();
 	}
 	
@@ -147,7 +159,17 @@ public class GraphPanel extends JPanel implements StandardPanel {
 				g.setColor(Color.BLACK);
 				g.draw(s);
 			}
-			MainProbeQuery.get().displayStatus("Graph drawing complete.  Click on a point for more info");
+
+			String title = yAttr.getName() + " vs " + xAttr.getName();
+			super.drawString(g, MONOSPACE_DLX, title, getWidth() / 2, MARGIN / 4);
+			drawAxis(g, xData.min(), xData.max(), xAttr.getName(), false); 
+			drawAxis(g, yData.min(), yData.max(), yAttr.getName(), true); 
+			String colorText = "Color (" + zAttr.getName() + "): " + zData.min() + " (green) -> " + zData.max() + "(red)";
+			super.drawString(g, MONOSPACE_STD, colorText, getWidth() / 2, MARGIN * 5 / 8);
+			
+			if (this.highlightedProbeIndex == NO_RESULT_SELECTED) {
+				MainProbeQuery.get().displayStatus("Graph drawing complete.  Click on a point for more info.");
+			}
 		}
 	}
 

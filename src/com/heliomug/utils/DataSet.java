@@ -32,7 +32,11 @@ public class DataSet {
 		return toRet;
 	}
 	
-	public double size() {
+	public double get(int i) {
+		return x[i];
+	}
+	
+	public int size() {
 		return x.length;
 	}
 	
@@ -52,6 +56,10 @@ public class DataSet {
 		return max;
 	}
 
+	public double range() {
+		return this.max() - this.min();
+	}
+	
 	public double sum() {
 		double sum = 0;
 		for (int i = 0 ; i < x.length ; i++) {

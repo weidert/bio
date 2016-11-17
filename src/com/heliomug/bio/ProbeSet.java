@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.heliomug.utils.DataSet;
+
 /**
  * This class keeps a list of probes, typically as the result of a query
  * 
@@ -110,13 +112,13 @@ public class ProbeSet implements Iterable<Probe>{
 		return li;
 	}
 	
-	public double[] extractFeature(ProbeAttribute attr) {
+	public DataSet getDataSet(ProbeAttribute attr) {
 		List<Probe> li = getList();
 		double[] toRet = new double[size()];
 		for (int i = 0 ; i < size() ; i++) {
 			toRet[i] = attr.apply(li.get(i));
 		}
-		return toRet;
+		return new DataSet(toRet);
 	}
 	
 	/**

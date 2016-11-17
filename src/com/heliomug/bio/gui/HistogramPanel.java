@@ -6,13 +6,13 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
-import javax.swing.JPanel;
-
+import com.heliomug.bio.ProbeAttribute;
 import com.heliomug.utils.DataSet;
 
-public class HistogramPanel extends JPanel implements StandardPanel {
+public class HistogramPanel extends StandardPanel {
 	private static final long serialVersionUID = 8953512310683255995L;
 
+	private ProbeAttribute attr;
 	private DataSet data;
 	private int binCount;
 	
@@ -26,12 +26,14 @@ public class HistogramPanel extends JPanel implements StandardPanel {
 	}
 	
 	public void clear() {
+		this.attr = null;
 		this.data = null;
 		repaint();
 	}
 	
-	public void display(DataSet data, int binCount) {
+	public void display(ProbeAttribute attr, DataSet data, int binCount) {
 		this.data = data;
+		this.attr = attr;
 		this.binCount = binCount;
 		this.repaint();
 	}
@@ -61,8 +63,8 @@ public class HistogramPanel extends JPanel implements StandardPanel {
 				g.fill(rect);
 				g.setColor(Color.BLACK);
 				g.draw(rect);
-				
 			}
+			drawAxis(g, data.min(), data.max(), attr.getName(), false); 
 		}
 	}
 }

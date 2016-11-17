@@ -19,7 +19,7 @@ import com.heliomug.bio.ProbeSet;
 import com.heliomug.utils.DataSet;
 import com.heliomug.utils.FileUtils;
 
-public class StatsPanel extends JPanel implements ActionListener, StandardPanel {
+public class OneDimVisPanel extends StandardPanel implements ActionListener {
 	private static final long serialVersionUID = 8953512310683255995L;
 
 	HistogramPanel histogramPanel;
@@ -27,12 +27,12 @@ public class StatsPanel extends JPanel implements ActionListener, StandardPanel 
 	JComboBox<ProbeAttribute> selector;
 	JSpinner binsSpinner;
 	JButton button;
-	StatsInfoPanel statsInfoPanel;
+	StatsSummaryPanel statsInfoPanel;
 	
 	ProbeSet results;
 	
 	
-	public StatsPanel(int width, int height) {
+	public OneDimVisPanel(int width, int height) {
 		super();
 		histogramPanel = new HistogramPanel(height, height);
 		results = null;
@@ -40,7 +40,7 @@ public class StatsPanel extends JPanel implements ActionListener, StandardPanel 
 		this.setLayout(new BorderLayout());
 		this.setBorder(STANDARD_BORDER);
 		
-		statsInfoPanel = new StatsInfoPanel();
+		statsInfoPanel = new StatsSummaryPanel();
 		this.add(statsInfoPanel, BorderLayout.NORTH);
 		this.add(histogramPanel, BorderLayout.CENTER);
 		JPanel optionsPanel = new JPanel();
@@ -62,7 +62,7 @@ public class StatsPanel extends JPanel implements ActionListener, StandardPanel 
 	
 	private DataSet getDataSet() {
 		ProbeAttribute attr = ((ProbeAttribute)(selector.getSelectedItem()));
-		DataSet data = new DataSet(results.extractFeature(attr));
+		DataSet data = results.getDataSet(attr);
 		return data;
 	}
 	
@@ -91,8 +91,9 @@ public class StatsPanel extends JPanel implements ActionListener, StandardPanel 
 		if (e.getActionCommand().equals("SHOW STATS")) {
 			new Thread(() -> {
 				DataSet data = getDataSet();
+				ProbeAttribute attr = (ProbeAttribute)selector.getSelectedItem();
 				int bins = (int)binsSpinner.getValue();
-				histogramPanel.display(data, bins);
+				histogramPanel.display(attr, data, bins);
 				statsInfoPanel.displayStats(data);
 				this.repaint();
 			}).start();

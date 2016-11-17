@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Function;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -15,7 +14,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.heliomug.bio.Probe;
 import com.heliomug.bio.ProbeAttribute;
 import com.heliomug.bio.ProbeSet;
 import com.heliomug.utils.FileUtils;
@@ -26,7 +24,7 @@ import com.heliomug.utils.FileUtils;
  * @author cweidert
  *
  */
-public class GraphicsPanel extends JPanel implements ActionListener {
+public class ThreeDimVisPanel extends StandardPanel implements ActionListener {
 	private static final long serialVersionUID = -396497902138438977L;
 
 	private GraphPanel illustrationPanel;
@@ -40,13 +38,13 @@ public class GraphicsPanel extends JPanel implements ActionListener {
 
 	private ProbeSet results;
 	
-	public GraphicsPanel(int width, int height) {
+	public ThreeDimVisPanel(int width, int height) {
 		super();
 		
 		results = null;
 		this.illustrationPanel = new GraphPanel(width, height);
 		
-		this.setBorder(MainProbeQuery.STANDARD_BORDER);
+		this.setBorder(STANDARD_BORDER);
 		this.setLayout(new BorderLayout());
 		this.add(illustrationPanel, BorderLayout.CENTER);
 		
@@ -74,14 +72,6 @@ public class GraphicsPanel extends JPanel implements ActionListener {
 		executeButton.addActionListener(this);
 		executeButton.setEnabled(false);
 		subsubpanel.add(executeButton);
-		/*
-		cancelButton = new JButton("Cancel Visualization");
-		cancelButton.setActionCommand("CANCEL GRAPHICS");
-		cancelButton.setMnemonic(KeyEvent.VK_L);
-		cancelButton.addActionListener(this);
-		cancelButton.setEnabled(false);
-		subsubpanel.add(cancelButton);
-		*/
 		subpanel.add(subsubpanel, BorderLayout.SOUTH);
 		this.add(subpanel, BorderLayout.SOUTH);
 	}
@@ -123,7 +113,6 @@ public class GraphicsPanel extends JPanel implements ActionListener {
 		repaint();
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void showGraphics() {
 		if (results != null) {
 			executeButton.setEnabled(false);
@@ -131,9 +120,9 @@ public class GraphicsPanel extends JPanel implements ActionListener {
 			illustrationPanel.fillFromResults(
 				results, 
 				(String)chromoSelector.getSelectedItem(),
-				(Function<Probe, Double>)xSelector.getSelectedItem(),
-				(Function<Probe, Double>)ySelector.getSelectedItem(),
-				(Function<Probe, Double>)colorSelector.getSelectedItem()
+				(ProbeAttribute)xSelector.getSelectedItem(),
+				(ProbeAttribute)ySelector.getSelectedItem(),
+				(ProbeAttribute)colorSelector.getSelectedItem()
 			);
 			repaint();
 			executeButton.setEnabled(true);

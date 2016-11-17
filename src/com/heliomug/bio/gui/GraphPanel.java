@@ -2,24 +2,21 @@ package com.heliomug.bio.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
-import java.util.function.Function;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
-import com.heliomug.bio.Probe;
 import com.heliomug.bio.ProbeAttribute;
 import com.heliomug.bio.ProbeSet;
 import com.heliomug.utils.DataSet;
-import com.heliomug.utils.StatusDisplayer;
 import com.heliomug.utils.GlobalStatusDisplayer;
+import com.heliomug.utils.StatusDisplay;
 
 /**
  * This is a panel to display a graph of the data.  
@@ -27,37 +24,46 @@ import com.heliomug.utils.GlobalStatusDisplayer;
  * @author cweidert
  *
  */
-public class GraphPanel extends JPanel implements StandardPanel {
+public class GraphPanel extends StandardPanel {
 	private static final long serialVersionUID = 1452297830452829273L;
 
+	private static final int NO_RESULT_SELECTED = -1;
+	
 	private static final double ELLIPSE_RADIUS = 5; 
 	
 	private static final Color HIGHLIGHT_COLOR = Color.BLUE;
 	
 	private ProbeSet results;
-	private Function<Probe, Double> xFxn;
-	private Function<Probe, Double> yFxn;
-	private Function<Probe, Double> zFxn;
+
+	private int highlightedProbeIndex;
+	private List<Shape> points;
+	private double[] colorVals;
+	private ProbeAttribute xAttr;
+	private DataSet xData;
+	private DataSet yData;
+	private DataSet zData;
+	private ProbeAttribute yAttr;
+	private ProbeAttribute zAttr;
 	
-	private int specialProbeIndex;
 	
 	public GraphPanel(int xSize, int ySize) {
 		super();
 		results = null;
-		specialProbeIndex = -1;
+		highlightedProbeIndex = NO_RESULT_SELECTED;
+		points = null;
+		colorVals = null;
+		xData = null;
+		yData = null;
+		zData = null;
 		
 		this.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Probe p = getNearProbe(e.getX(), e.getY());
-				if (p != null) {
-					StatusDisplayer sd = GlobalStatusDisplayer.get();
-					sd.displayStatus(p.toString());
-				}
+				highlightClickedProbe(e.getX(), e.getY());
 			}
 		});
 		this.setBackground(Color.WHITE);
-		this.setBorder(MainProbeQuery.STANDARD_BORDER);
+		this.setBorder(STANDARD_BORDER);
 
 		this.setPreferredSize(new Dimension(xSize, ySize));
 	}
@@ -65,14 +71,29 @@ public class GraphPanel extends JPanel implements StandardPanel {
 	public void fillFromResults(
 			ProbeSet results, 
 			String chromo,
-			Function<Probe, Double> xFxn, 
-			Function<Probe, Double> yFxn, 
-			Function<Probe, Double> zFxn
+			ProbeAttribute xAttr, 
+			ProbeAttribute yAttr, 
+			ProbeAttribute zAttr
 	){
+		this.xAttr = xAttr;
+		this.yAttr = yAttr;
+		this.zAttr = zAttr;
+		points = new ArrayList<>();
+		this.xData = results.getDataSet(xAttr);
+		this.yData = results.getDataSet(yAttr);
+		this.zData = results.getDataSet(zAttr);
 		this.results = results.filterByChromo(chromo);
-		this.xFxn = xFxn;
-		this.yFxn = yFxn;
-		this.zFxn = zFxn;
+		if (results != null) {
+			MainProbeQuery.get().displayStatus("Processing points for graph...");
+			double[] xNorm = getNormZeroOne(xData);
+			double[] yNorm = getNormZeroOne(yData);
+			colorVals = getNormZeroOne(results.getDataSet(zAttr));
+			for (int i = 0 ; i < results.size() ; i++) {
+				Shape s = getPoint(xNorm[i], yNorm[i]);
+				points.add(s);
+			}
+			MainProbeQuery.get().displayStatus("Done processing graph points.");
+		}
 	}
 
 	private double getPixX(double x) {
@@ -84,45 +105,40 @@ public class GraphPanel extends JPanel implements StandardPanel {
 		return (1 - y) * (getHeight() - 2 * MARGIN) + MARGIN;
 	}
 	
-	public Probe getNearProbe(int xLoc, int yLoc) {
-		if (results != null) {
-			double[] xNorm = normZeroOne(xFxn);
-			double[] yNorm = normZeroOne(yFxn);
-			for (int i = xNorm.length - 1 ; i >= 0; i--) {
-				double xP = getPixX(xNorm[i]);
-				double yP = getPixY(yNorm[i]);
-				double xDist = (xLoc - xP);
-				double yDist = (yLoc - yP);
-				double distSq = xDist * xDist + yDist * yDist;
-				if (distSq < ELLIPSE_RADIUS * ELLIPSE_RADIUS) {
-					specialProbeIndex = i;
-					return results.get(i);
+	public void highlightClickedProbe(int xLoc, int yLoc) {
+		if (points != null) {
+			for (int i = points.size() - 1 ; i >= 0; i--) {
+				Shape s = points.get(i);
+				if (s.contains(xLoc, yLoc)) {
+					highlightedProbeIndex = i;
+					StatusDisplay sd = GlobalStatusDisplayer.get();
+					sd.displayStatus(results.get(i).toString());
 				}
 			}
 		}
-		return null;
 	}
 	
-	private double[] normZeroOne(Function<Probe, Double> fxn) {
-		double[] toRet = new double[results.size()];
-		for (int i = 0 ; i < results.size() ; i++) {
-			toRet[i] = fxn.apply(results.get(i));
-		}
-		double max = new DataSet(toRet).max();
-		double min = new DataSet(toRet).min();
-		double dist = max - min;
-		for (int i = 0 ; i < toRet.length ; i++) {
-			toRet[i] = (toRet[i] - min) / dist;
+	private double[] getNormZeroOne(DataSet data) {
+		double[] toRet = new double[data.size()];
+		double range = data.range();
+		double min = data.min();
+		for (int i = 0 ; i < data.size() ; i++) {
+			toRet[i] = (data.get(i) - min) / range;
 		}
 		return toRet;
 	}
 
 	public void clear() {
 		results = null;
-		xFxn = null;
-		yFxn = null;
-		zFxn = null;
-		specialProbeIndex = -1;
+		points = null;
+		colorVals = null;
+		xAttr = null;
+		yAttr = null;
+		zAttr = null;
+		xData = null;
+		yData = null;
+		zData = null;
+		highlightedProbeIndex = NO_RESULT_SELECTED;
 		repaint();
 	}
 	
@@ -131,26 +147,33 @@ public class GraphPanel extends JPanel implements StandardPanel {
 		super.paint(gee);
 		Graphics2D g = (Graphics2D)gee;
 		
-		if (results != null) {
-			if (specialProbeIndex < 0) {
-				MainProbeQuery.get().displayStatus("Starting Graph Drawing...");
-			}
-			double[] xNorm = normZeroOne(xFxn);
-			double[] yNorm = normZeroOne(yFxn);
-			double[] zNorm = normZeroOne(zFxn);
-			for (int i = 0 ; i < results.size() ; i++) {
-				if (i == specialProbeIndex) {
+		if (points != null) {
+			for (int i = 0 ; i < points.size() ; i++) {
+				if (i == highlightedProbeIndex) {
 					g.setColor(HIGHLIGHT_COLOR);
 				} else {
-					g.setColor(getColor(zNorm[i]));
+					g.setColor(getColor(colorVals[i]));
 				}
-				Shape s = getPoint(xNorm[i], yNorm[i]);
+				Shape s = points.get(i);
 				g.fill(s);
 				g.setColor(Color.BLACK);
 				g.draw(s);
 			}
-			if (specialProbeIndex < 0) {
-				MainProbeQuery.get().displayStatus("Graph drawing complete.  Click on a point for more info");
+
+			drawAxis(g, xData.min(), xData.max(), xAttr.getName(), false); 
+			drawAxis(g, yData.min(), yData.max(), yAttr.getName(), true); 
+			String title = yAttr.getName() + " vs " + xAttr.getName();
+			drawTitle(g, title);
+			String repoString = MainProbeQuery.get().getRepositoryString();
+			String queryString = MainProbeQuery.get().getQueryString();
+			String queryInfo = repoString + ", " + queryString;
+			drawSubtitle(g, queryInfo);
+			String colorAttr = zAttr.getName();
+			String colorText = String.format("Color (%s): %s (green) -> %s (red)", colorAttr, zData.min(), zData.max());
+			drawSubsubtitle(g, colorText);
+			
+			if (this.highlightedProbeIndex == NO_RESULT_SELECTED) {
+				MainProbeQuery.get().displayStatus("Graph drawing complete.  Click on a point for more info.");
 			}
 		}
 	}
@@ -170,21 +193,7 @@ public class GraphPanel extends JPanel implements StandardPanel {
 	}
 	
 	public static void maing(String[] args) {
-		ProbeSet results = new ProbeSet();
-		for (int i = 0 ; i < 10 ; i++) {
-			results.add(new Probe("X", i, i + 2 + (i % 4), Math.random()));
-		}
-		System.out.println(results);
-		
-		GraphPanel panel = new GraphPanel(300, 300);
-		panel.fillFromResults(results, "X", ProbeAttribute.START, ProbeAttribute.LENGTH, ProbeAttribute.VALUE);
-		EventQueue.invokeLater(() -> {
-			JFrame frame = new JFrame("CloudTest");
-			frame.add(panel);
-			frame.pack();
-			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			frame.setVisible(true);
-		});
+		System.out.println(new Rectangle2D.Double(100, 100, 10, 10).contains(105, 105));
 	}
 
 }

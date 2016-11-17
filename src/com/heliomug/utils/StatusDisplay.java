@@ -1,5 +1,5 @@
 package com.heliomug.utils;
 
-public interface StatusDisplayer {
+public interface StatusDisplay {
 	public abstract void displayStatus(Object status);
 }

@@ -55,7 +55,11 @@ public class GenomeQuery {
 	public int getEndOffset() { return this.endOffset; }
 
 	public String toString() {
-		return String.format("%s:%d->%s:%d", startChromo, startOffset, endChromo, endOffset);
+		if (startChromo.equals(endChromo)) {
+			return String.format("%s:%d-%d", startChromo, startOffset, endOffset);
+		} else {
+			return String.format("%s:%d-%s:%d", startChromo, startOffset, endChromo, endOffset);
+		}
 	}
 	
 	public static void main(String[] args) {

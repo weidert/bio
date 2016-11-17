@@ -30,9 +30,9 @@ import com.heliomug.bio.QueriableGenome;
 import com.heliomug.bio.repository.GenomeRepository;
 import com.heliomug.utils.FileUtils;
 import com.heliomug.utils.GlobalStatusDisplayer;
-import com.heliomug.utils.StatusDisplayer;
+import com.heliomug.utils.StatusDisplay;
 
-public class MainProbeQuery extends JFrame implements ActionListener, StatusDisplayer, StandardPanel {
+public class MainProbeQuery extends JFrame implements ActionListener, StatusDisplay {
 	private static final long serialVersionUID = -4721791747633762165L;
 
 	private static final String CURRENT_REPOSITORY_STRING = 	"Current Repository: \t%s";
@@ -59,11 +59,11 @@ public class MainProbeQuery extends JFrame implements ActionListener, StatusDisp
 	
 	private JLabel statusLabel;
 	
-	private StatsPanel statsPanel;
-	private GraphicsPanel graphicsPanel;
+	private OneDimVisPanel statsPanel;
+	private ThreeDimVisPanel graphicsPanel;
 	private TextPanel textPanel;
 	
-	public MainProbeQuery(String title) {
+	private MainProbeQuery(String title) {
 		super(title);
 		
 		MainProbeQuery.instance = this;
@@ -86,26 +86,37 @@ public class MainProbeQuery extends JFrame implements ActionListener, StatusDisp
 	
 	private JPanel mainPanel() {
 		JPanel mainPanel = new JPanel();
-		//mainPanel.setPreferredSize(new Dimension(800, 400));
 		mainPanel.setLayout(new BorderLayout());
 		
-		mainPanel.add(statusPanel(), BorderLayout.NORTH);
+		JPanel subPanel = new JPanel();
+		subPanel.setLayout(new BorderLayout());
+		
+		subPanel.add(statusPanel(), BorderLayout.NORTH);
+		subPanel.add(resultsPane(), BorderLayout.CENTER);
+		subPanel.add(queryPanel(), BorderLayout.SOUTH);
+		mainPanel.add(subPanel, BorderLayout.CENTER);
+		
+		statusLabel = new JLabel("No Repository Loaded Yet!");
+		statusLabel.setBorder(StandardPanel.STANDARD_BORDER);
+		mainPanel.add(statusLabel, BorderLayout.SOUTH);
+
+		return mainPanel;
+	}
+	
+	private JTabbedPane resultsPane() {
 		JTabbedPane tabbedPane = new JTabbedPane();
 		textPanel = new TextPanel();
 		tabbedPane.addTab("Results Text", null, textPanel, "Results in text form");
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_T);
 		tabbedPane.setDisplayedMnemonicIndexAt(0, 8);
-		graphicsPanel = new GraphicsPanel(GRAPHICS_WIDTH, GRAPHICS_HEIGHT);
+		graphicsPanel = new ThreeDimVisPanel(GRAPHICS_WIDTH, GRAPHICS_HEIGHT);
 		tabbedPane.addTab("Results Graph", null, graphicsPanel, "Results customizable graphical form");
 		tabbedPane.setMnemonicAt(1, KeyEvent.VK_G);
-		statsPanel = new StatsPanel(HISTOGRAM_WIDTH, HISTOGRAM_HEIGHT);
+		statsPanel = new OneDimVisPanel(HISTOGRAM_WIDTH, HISTOGRAM_HEIGHT);
 		tabbedPane.addTab("Results Stats", null, statsPanel, "Histogram & Stats for various results measures");
 		tabbedPane.setMnemonicAt(2, KeyEvent.VK_S);
 		tabbedPane.setDisplayedMnemonicIndexAt(2, 8);
-		mainPanel.add(tabbedPane, BorderLayout.CENTER);
-		mainPanel.add(queryPanel(), BorderLayout.SOUTH);
-		
-		return mainPanel;
+		return tabbedPane;
 	}
 	
 	@SuppressWarnings("serial")
@@ -133,7 +144,6 @@ public class MainProbeQuery extends JFrame implements ActionListener, StatusDisp
 				super.paint(g);
 			}
 		});
-		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		return panel;
 	}
 	
@@ -167,9 +177,6 @@ public class MainProbeQuery extends JFrame implements ActionListener, StatusDisp
 		cancelButton.setMnemonic(KeyEvent.VK_C);
 		subpanel.add(cancelButton);
 		panel.add(subpanel, BorderLayout.CENTER);
-		statusLabel = new JLabel(" ");
-		statusLabel.setBorder(STANDARD_BORDER);
-		panel.add(statusLabel, BorderLayout.SOUTH);
 		return panel;
 	}
 	
@@ -318,7 +325,7 @@ public class MainProbeQuery extends JFrame implements ActionListener, StatusDisp
 	}
 	
 	private void openRepository() {
-		//File inputDirectory = new File("/home/cweidert/prog/data/biodiscovery/repo1"); 
+		//File inputDirectory = new File("/home/cweidert/prog/data/biodiscovery/repository"); 
 		File inputDirectory = FileUtils.selectDirectory("Select Repository Directory to Load");
 		if (inputDirectory != null) {
 			Thread t = new Thread(() -> {

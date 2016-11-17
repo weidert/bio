@@ -1,5 +1,6 @@
 package com.heliomug.utils;
 
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -94,8 +95,10 @@ public class FileUtils {
 			file = new File(file.getPath() + ".png");
 		}
 		BufferedImage bi = new BufferedImage(comp.getWidth(), comp.getHeight(), BufferedImage.TYPE_INT_ARGB);
-		comp.paint(bi.getGraphics());
+		Graphics g = bi.getGraphics();
+		comp.paint(g);
 		ImageIO.write(bi, "png", file);
+		g.dispose();
 		return file.getAbsolutePath();
 	}
     

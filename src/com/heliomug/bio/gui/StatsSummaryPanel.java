@@ -7,7 +7,7 @@ import javax.swing.JPanel;
 
 import com.heliomug.utils.DataSet;
 
-public class StatsInfoPanel extends JPanel {
+public class StatsSummaryPanel extends JPanel {
 	private static final long serialVersionUID = 7712830295637571583L;
 
 	private JLabel minLabel;
@@ -18,7 +18,7 @@ public class StatsInfoPanel extends JPanel {
 	private JLabel ssdLabel;
 	private JLabel psdLabel;
 	
-	public StatsInfoPanel() {
+	public StatsSummaryPanel() {
 		super();
 		this.setLayout(new GridLayout(4, 2));
 		sizeLabel = new JLabel("n: ");

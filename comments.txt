@@ -1,0 +1,37 @@
+----How to use the program----
+
+To use the program, you first have to make a repository.  The repository is just a folder with the information organized.  Go to File -> New Repository, then select the file with the probes (like "theProbes.txt") and an empty folder to put the repository in (like "/home/aName/data/myRepository").  With the ~2.8 million line example file you gave me, it takes a minute or two to process the file and make the repository.  After that, if you want to reload the repository, go to File -> Open Repository and select the folder you saved it in.  Loading an existing repository is fast.  After you have a repository created or loaded, you can use the area on the bottom of the gui to execute queries.  You can then display the results in the tabs.  (See below for descriptions.)  
+
+There is also a command line tool, but it's not my favorite.  It simply prints the results to standard output.  It's at com.heliomug.bio.CommandLineTool.  
+
+----Data Storage----
+
+Behind the scenes, this program uses a collection of B-Trees (One for each chromosome) to store the probes.  I picked B-Trees because they minimize the disk accesses / help with the speed.  I somewhat arbitrarily choose 1024 values per node in the B-Tree.  I was originally using an interval tree, but it had too many (> 1,000,000) nodes / was too dang slow.  Besides, all of the lengths of the probes were pretty low (around 25 max).  Because this data structure needed to be place on the disk, each node is stored as a separate file (e.g. "000001.node").  There is a NodeLoader class that loads the nodes into memory on request.  
+
+----Query Result Display----
+
+Once you execute a query, it can be displayed in three ways.  There is a tab that lets you inspect the results as text, a tab that lets you make a graph based on various probe measures, and a tab that lets you make a histogram and display summary statistics from the data.  See attachments for examples.  
+
+Unfortunately, the displaying of the data can take quite a while if you have hundreds of thousands of results.  In particular, displaying a graph with a lot of results may cause the program to hang because its paint(Graphics g) method (which is called by the main program thread) intrinsically takes a while to draw a point for each result.  I thought about making it interruptable somehow (tough because paint is called automatically by the main thread) or possibly limiting the number of points it draws, but I didn't.  The histogram is much better, but can still be a little slow.  
+
+----Speed----
+
+Processing an input file to store the data takes quite a while.  I believe it's something like O(n log n) where n is the number of probes.  
+
+You can run the queries very quickly.  I think it's something like O(log(n) + r) where n is the number of probes in total and r is the number of probes in the result.  This may still take quite a while if your query has tons and tons of results though.  You can interrupt / cancel a query if you decide the results aren't worth your time.  
+
+----Programming things I used or didn't----
+
+B-Trees, Interval Trees (for a time), Enums, Interfaces, Abstract Classes, Inheritance, Polymorphism, Threading, GUIs & Various Widgets (drop downs, spinners, buttons, labels, etc), Graphics, AffineTransforms (very briefly), Singletons, Factories, File I/O, Regular Expressions, Lambda Functions (new in Java 8!), Functional Interfaces.  
+
+Notably, I didn't use any synchronization in this program.  In the future, I'd like to parallelize the B-Tree searching a little more, I think.  
+
+----Selected Assumptions----
+
+The file processor assumes that the probes for each chromosome are contiguous.  For for searching, I assumed that all probes had lengths under 100.  (25 seemed like the max.)  I assumed that the maximum start and ending positions were under a billion.  
+
+----Final Comments----
+
+This project was much more sprawling than I anticipated.  I know you can just make sure the probes are sorted, break the probe list into a series of smaller files, and complete the queries by doing a binary search on the files/probes.  However, I think I learned more this way.  
+
+I unfortunately didn't have time this week to go through and comment everything, but I could do it in the future if someone would really like.  
